@@ -248,7 +248,7 @@ export default function LoginPage() {
             </Form>
             <div className="p-4 text-center">
               <p className="text-black flex items-center gap-2">
-                Don't have an account?
+                Don&apos;t have an account?
                 <Link
                   href="/signup"
                   className="text-yellow-600 hover:text-yellow-700"
