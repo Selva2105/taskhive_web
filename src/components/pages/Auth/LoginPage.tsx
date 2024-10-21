@@ -160,7 +160,10 @@ export default function LoginPage() {
               </p>
             </div>
             <Form {...form}>
-              <form className="mt-8 space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+              <form
+                className="mt-8 space-y-6"
+                onSubmit={form.handleSubmit(onSubmit)}
+              >
                 <div className="space-y-4">
                   <FormField
                     control={form.control}
@@ -197,7 +200,10 @@ export default function LoginPage() {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <PasswordInput value={field.value} onChange={field.onChange} />
+                          <PasswordInput
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -232,15 +238,17 @@ export default function LoginPage() {
                     className="group relative flex w-full justify-center rounded-md border border-transparent bg-yellow-600 px-4 py-2 text-sm font-medium text-white hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
                     disabled={isLoading}
                   >
-                    {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+                    {isLoading && (
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                    )}
                     Sign in
                   </Button>
                 </div>
               </form>
             </Form>
             <div className="p-4 text-center">
-              <p className="text-black">
-                Don't have an account?{' '}
+              <p className="text-black flex items-center gap-2">
+                Don't have an account?
                 <Link
                   href="/signup"
                   className="text-yellow-600 hover:text-yellow-700"

@@ -43,7 +43,8 @@ export const filterCountries = (
     });
 
     filteredCountries = filteredCountries.filter(
-      ({ countryShortCode }) => priorityCountries.indexOf(countryShortCode) === -1,
+      ({ countryShortCode }) =>
+        priorityCountries.indexOf(countryShortCode) === -1,
     );
   }
 
@@ -74,7 +75,9 @@ export const filterRegions = (
   if (priorityRegions.length > 0) {
     // ensure the Regions are added in the order in which they are specified by the user
     priorityRegions.forEach((slug) => {
-      const result = filteredRegions.find(({ shortCode }) => shortCode === slug);
+      const result = filteredRegions.find(
+        ({ shortCode }) => shortCode === slug,
+      );
       if (result) {
         regionsListedFirst.push(result);
       }

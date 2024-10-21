@@ -29,7 +29,11 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
             onClick={() => setShowPassword(!showPassword)}
             className="text-gray-400 hover:text-gray-500 focus:text-gray-500 focus:outline-none"
           >
-            {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+            {showPassword ? (
+              <EyeOff className="size-5" />
+            ) : (
+              <Eye className="size-5" />
+            )}
           </button>
         </div>
       </div>
