@@ -19,6 +19,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import PasswordInput from '@/components/ui/password-input';
+import { loginUser } from '@/lib/service/auth.service';
+import { toast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import { fetchUserData } from '@/lib/features/user/userSlice';
+import { useAppDispatch } from '@/lib/hooks';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -30,6 +36,8 @@ type FormSchema = z.infer<typeof formSchema>;
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const dispatch = useAppDispatch();
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,120 +46,59 @@ export default function LoginPage() {
     },
   });
 
-  const fixedBackgroundPositions = [
-    { top: '5%', left: '10%' },
-    { top: '15%', left: '30%' },
-    { top: '25%', left: '50%' },
-    { top: '35%', left: '70%' },
-    { top: '45%', left: '20%' },
-    { top: '55%', left: '40%' },
-    { top: '65%', left: '60%' },
-    { top: '75%', left: '80%' },
-    { top: '85%', left: '30%' },
-    { top: '95%', left: '50%' },
-    { top: '10%', left: '70%' },
-    { top: '20%', left: '90%' },
-    { top: '30%', left: '10%' },
-    { top: '40%', left: '30%' },
-    { top: '50%', left: '50%' },
-  ];
+  const { push } = useRouter();
 
-  const backgroundHives = useMemo(
-    () =>
-      fixedBackgroundPositions.map((position, i) => (
-        <div
-          key={i}
-          className="absolute"
-          style={{
-            top: position.top,
-            left: position.left,
-            transform: `scale(${Math.random() * 0.5 + 0.5})`,
-          }}
-        >
-          <svg
-            width="100"
-            className="text-primary"
-            height="100"
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M50 0L93.3013 25V75L50 100L6.69873 75V25L50 0Z"
-              fill="rgba(255, 255, 255, 0.1)"
-            />
-          </svg>
-        </div>
-      )),
-    [],
-  );
-
-  const fixedPositions = [
-    { top: '10%', left: '20%' },
-    { top: '30%', left: '40%' },
-    { top: '50%', left: '60%' },
-    { top: '70%', left: '80%' },
-    { top: '20%', left: '70%' },
-    { top: '60%', left: '30%' },
-  ];
-
-  const cardHives = useMemo(
-    () =>
-      fixedPositions.map((position, i) => (
-        <div
-          key={i}
-          className="absolute"
-          style={{
-            top: position.top,
-            left: position.left,
-            transform: `scale(${Math.random() * 0.3 + 0.2})`,
-          }}
-        >
-          <svg
-            width="100"
-            className="text-primary"
-            height="100"
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M50 0L93.3013 25V75L50 100L6.69873 75V25L50 0Z"
-              fill="rgba(255, 204, 0, 0.1)"
-            />
-          </svg>
-        </div>
-      )),
-    [],
-  );
 
   async function onSubmit(data: FormSchema) {
     setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
+    try {
+      const response = await loginUser(data);
 
-    console.log(data);
+      if (response.status === 200) {
+        form.reset();
+        if (typeof window !== 'undefined') {
+          debugger;
+          localStorage.setItem('accessToken-TH', response.data.token);
+          localStorage.setItem('userId-TH', response.data.user.id);
+        }
+
+        dispatch(fetchUserData({ id: response.data.user.id, token: response.data.token }));
+        toast({
+          title: 'Login successful',
+          description: 'Redirecting to dashboard',
+        });
+      };
+
+      setTimeout(() => {
+        push('/');
+      }, 2000);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        const errorMessage = error.response.data.message || 'An error occurred';
+        toast({
+          title: 'Error',
+          description: errorMessage,
+        });
+      } else {
+        console.error(error);
+        toast({
+          title: 'Error',
+          description: 'An unexpected error occurred',
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-primary/50 to-primary/70 px-4 sm:px-6 lg:px-8">
-      {/* Background Hives */}
-      <div className="absolute inset-0 z-0">{backgroundHives}</div>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-amber-50 px-4 sm:px-6 lg:px-8">
 
       <div className="z-10 w-full max-w-md">
         <div className="overflow-hidden rounded-lg bg-white bg-opacity-90 shadow-2xl backdrop-blur-lg">
-          {/* Card Background Hives */}
-          <div className="absolute inset-0 z-0">{cardHives}</div>
-
           <div className="relative z-10 p-8">
             <div className="flex flex-col items-center justify-center space-y-4">
-              <img
-                src="https://firebasestorage.googleapis.com/v0/b/ikart-40b39.appspot.com/o/taskhive%2Flogos%2Flogo-lap.jpg?alt=media&token=d1793450-da80-4e6e-a81f-a28d1353665a"
-                alt="TaskHive Logo"
-                className="size-20 rounded-full object-contain"
-              />
               <h2 className="text-3xl font-extrabold text-gray-900">
                 Welcome to TaskHive
               </h2>
@@ -247,7 +194,7 @@ export default function LoginPage() {
               </form>
             </Form>
             <div className="p-4 text-center">
-              <p className="text-black flex items-center gap-2">
+              <p className="text-black flex items-center gap-2 justify-center">
                 Don&apos;t have an account?
                 <Link
                   href="/signup"

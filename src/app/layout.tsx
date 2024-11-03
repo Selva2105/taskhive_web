@@ -1,6 +1,8 @@
+import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 import type { Metadata } from 'next';
+import StoreProvider from './StoreProvider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -14,7 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`antialiased`}>{children}</body>
+      <body className={`antialiased`}>
+        <StoreProvider>
+          {children}
+          <Toaster />
+        </StoreProvider>
+      </body>
     </html>
   );
 }
