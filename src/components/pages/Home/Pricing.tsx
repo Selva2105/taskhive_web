@@ -10,6 +10,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -21,63 +22,203 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { CheckIcon, MinusIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 interface PlanFeature {
     type: string;
     features: {
         name: string;
-        Pollinator: boolean;
-        HoneyMaker: boolean;
-        HiveBuilder: boolean;
-        QueenCourt: boolean;
+        Pollinator: boolean | string;
+        HoneyMaker: boolean | string;
+        HiveBuilder: boolean | string;
+        QueenCourt: boolean | string;
     }[];
 }
 
-const planFeatures: PlanFeature[] = [
-    {
-        type: "Subscription Details",
-        features: [
-            { name: "Max Organizations", Pollinator: true, HoneyMaker: true, HiveBuilder: true, QueenCourt: true },
-            { name: "Max Members per Org", Pollinator: true, HoneyMaker: true, HiveBuilder: true, QueenCourt: true },
-            { name: "Max Roles per Org", Pollinator: true, HoneyMaker: true, HiveBuilder: true, QueenCourt: true },
-            { name: "Max Projects per Org", Pollinator: true, HoneyMaker: true, HiveBuilder: true, QueenCourt: true },
-            { name: "Max Tasks per Project", Pollinator: true, HoneyMaker: true, HiveBuilder: true, QueenCourt: true },
-        ],
-    },
-    {
-        type: "Support & Customization",
-        features: [
-            { name: "Priority Support", Pollinator: false, HoneyMaker: false, HiveBuilder: true, QueenCourt: true },
-            { name: "Custom Roles", Pollinator: false, HoneyMaker: false, HiveBuilder: true, QueenCourt: true },
-        ],
-    },
-    {
-        type: "Collaboration & Analytics",
-        features: [
-            { name: "Team Collaboration Tools", Pollinator: true, HoneyMaker: true, HiveBuilder: true, QueenCourt: true },
-            { name: "Reports & Analytics", Pollinator: false, HoneyMaker: false, HiveBuilder: true, QueenCourt: true },
-            { name: "Advanced Integrations", Pollinator: false, HoneyMaker: false, HiveBuilder: false, QueenCourt: true },
-        ],
-    },
-];
+interface Plan {
+    id: string;
+    title: string;
+    price: string;
+    description: string;
+    features: string[];
+    buttonVariant: "outline" | "default" | "link" | "destructive" | "secondary" | "ghost";
+    isPopular: boolean;
+    priceId: string;
+}
 
 export default function PricingSection() {
     const [isYearly, setIsYearly] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+
+    const { push } = useRouter();
 
     const monthlyPrices = {
+        Pollinator: 0,
         HoneyMaker: 499,
         HiveBuilder: 999,
         QueenCourt: 1499,
     };
 
     const yearlyPrices = {
+        Pollinator: 0,
         HoneyMaker: 5400,
         HiveBuilder: 10800,
         QueenCourt: 16800,
     };
 
     const formatPrice = (price: number) => `₹${price.toFixed(2)}`;
+
+    const plans: Plan[] = [
+        {
+            id: "Pollinator",
+            title: "Pollinator 🐝 (Free)",
+            price: "Free",
+            description: "Forever free",
+            features: [
+                "1 organization",
+                "3 members per org",
+                "2 roles per org",
+                "50 tasks per project"
+            ],
+            buttonVariant: "outline",
+            isPopular: false,
+            priceId: "",
+        },
+        {
+            id: "HoneyMaker",
+            title: "HoneyMaker 🍯 (Starter)",
+            price: isYearly ? formatPrice(yearlyPrices.HoneyMaker) : formatPrice(monthlyPrices.HoneyMaker),
+            description: "All the basics for starting a new business",
+            features: [
+                "1 organization",
+                "10 members per org",
+                "3 roles per org",
+                "Priority Support"
+            ],
+            buttonVariant: "default",
+            isPopular: true,
+            priceId: isYearly ? "price_1QHLXKKwOCNRHTuuQ7RrJ4ta" : "price_1QHLWBKwOCNRHTuuIwbm1kwa",
+        },
+        {
+            id: "HiveBuilder",
+            title: "HiveBuilder 🏗️ (Growth)",
+            price: isYearly ? formatPrice(yearlyPrices.HiveBuilder) : formatPrice(monthlyPrices.HiveBuilder),
+            description: "Everything you need for a growing business",
+            features: [
+                "3 organizations",
+                "50 members per org",
+                "8 roles per org",
+                "Priority Support"
+            ],
+            buttonVariant: "outline",
+            isPopular: false,
+            priceId: isYearly ? "price_1QHLceKwOCNRHTuuPECHTZbM" : "price_1QHLbwKwOCNRHTuuqWTo75hq",
+        },
+        {
+            id: "QueenCourt",
+            title: "Queen’s Court 👑 (Enterprise)",
+            price: isYearly ? formatPrice(yearlyPrices.QueenCourt) : formatPrice(monthlyPrices.QueenCourt),
+            description: "Advanced features for scaling your business",
+            features: [
+                "Unlimited organizations",
+                "Unlimited members per org",
+                "Unlimited roles per org",
+                "24/7 Premium Support"
+            ],
+            buttonVariant: "outline",
+            isPopular: false,
+            priceId: isYearly ? "price_1QHLdvKwOCNRHTuu2R6ymcBB" : "price_1QHLdGKwOCNRHTuuALRPvxRh",
+        }
+    ];
+
+    const planFeatures: PlanFeature[] = [
+        {
+            type: "Subscription Details",
+            features: [
+                {
+                    name: "Max Organizations",
+                    Pollinator: '2',
+                    HoneyMaker: '3',
+                    HiveBuilder: '3',
+                    QueenCourt: 'Unlimited'
+                },
+                {
+                    name: "Max Members per Org",
+                    Pollinator: '10',
+                    HoneyMaker: '50',
+                    HiveBuilder: '50',
+                    QueenCourt: 'Unlimited'
+                },
+                {
+                    name: "Max Roles per Org",
+                    Pollinator: '3',
+                    HoneyMaker: '8',
+                    HiveBuilder: '8',
+                    QueenCourt: 'Unlimited'
+                },
+                {
+                    name: "Max Projects per Org",
+                    Pollinator: '10',
+                    HoneyMaker: '15',
+                    HiveBuilder: '25',
+                    QueenCourt: 'Unlimited'
+                },
+                {
+                    name: "Max Tasks per Project",
+                    Pollinator: '50',
+                    HoneyMaker: '100',
+                    HiveBuilder: '200',
+                    QueenCourt: 'Unlimited'
+                },
+            ],
+        },
+        {
+            type: "Support & Customization",
+            features: [
+                {
+                    name: "Priority Support",
+                    Pollinator: false,
+                    HoneyMaker: false,
+                    HiveBuilder: true,
+                    QueenCourt: true
+                },
+                {
+                    name: "Custom Roles",
+                    Pollinator: false,
+                    HoneyMaker: false,
+                    HiveBuilder: true,
+                    QueenCourt: true
+                },
+            ],
+        },
+        {
+            type: "Collaboration & Analytics",
+            features: [
+                {
+                    name: "Team Collaboration Tools",
+                    Pollinator: true,
+                    HoneyMaker: true,
+                    HiveBuilder: true,
+                    QueenCourt: true
+                },
+                {
+                    name: "Reports & Analytics",
+                    Pollinator: false,
+                    HoneyMaker: false,
+                    HiveBuilder: true,
+                    QueenCourt: true
+                },
+            ],
+        },
+    ];
+
+    const getPrice = (plan: Plan) => {
+        const price = isYearly ? yearlyPrices[plan.id as keyof typeof yearlyPrices] : monthlyPrices[plan.id as keyof typeof monthlyPrices];
+        return { price };
+    };
+
+    const handleOpenChange = (open: boolean) => setIsOpen(open);
 
     return (
         <>
@@ -125,157 +266,55 @@ export default function PricingSection() {
                 {/* End Switch */}
                 {/* Grid */}
                 <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:items-center">
-                    {/* Card */}
-                    <Card>
-                        <CardHeader className="text-center pb-2">
-                            <CardTitle className="mb-7">Pollinator 🐝 (Free)</CardTitle>
-                            <span className="font-bold text-5xl">Free</span>
-                        </CardHeader>
-                        <CardDescription className="text-center">
-                            Forever free
-                        </CardDescription>
-                        <CardContent>
-                            <ul className="mt-7 space-y-2.5 text-sm">
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">1 organization</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">3 members per org</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">2 roles per org</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">50 tasks per project</span>
-                                </li>
-                            </ul>
-                        </CardContent>
-                        <CardFooter>
-                            <Button className="w-full" variant={"outline"}>
-                                Subscribe
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                    {/* End Card */}
-                    {/* Card */}
-                    <Card className="border-primary">
-                        <CardHeader className="text-center pb-2">
-                            <Badge className="uppercase w-max self-center mb-3">
-                                Most popular
-                            </Badge>
-                            <CardTitle className="!mb-7">HoneyMaker 🍯 (Starter)</CardTitle>
-                            <span className="font-bold text-5xl">
-                                {formatPrice(isYearly ? yearlyPrices.HoneyMaker : monthlyPrices.HoneyMaker)}
-                            </span>
-                        </CardHeader>
-                        <CardDescription className="text-center w-11/12 mx-auto">
-                            All the basics for starting a new business
-                        </CardDescription>
-                        <CardContent>
-                            <ul className="mt-7 space-y-2.5 text-sm">
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">1 organization</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">10 members per org</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">3 roles per org</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <MinusIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">Priority Support</span>
-                                </li>
-                            </ul>
-                        </CardContent>
-                        <CardFooter>
-                            <Button className="w-full">Subscribe</Button>
-                        </CardFooter>
-                    </Card>
-                    {/* End Card */}
-                    {/* Card */}
-                    <Card>
-                        <CardHeader className="text-center pb-2">
-                            <CardTitle className="mb-7">HiveBuilder 🏗️ (Growth)</CardTitle>
-                            <span className="font-bold text-5xl">
-                                {formatPrice(isYearly ? yearlyPrices.HiveBuilder : monthlyPrices.HiveBuilder)}
-                            </span>
-                        </CardHeader>
-                        <CardDescription className="text-center  w-11/12 mx-auto">
-                            Everything you need for a growing business
-                        </CardDescription>
-                        <CardContent>
-                            <ul className="mt-7 space-y-2.5 text-sm">
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">3 organizations</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">50 members per org</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">8 roles per org</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">Priority Support</span>
-                                </li>
-                            </ul>
-                        </CardContent>
-                        <CardFooter>
-                            <Button className="w-full" variant={"outline"}>
-                                Subscribe
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                    {/* End Card */}
-                    {/* Card */}
-                    <Card>
-                        <CardHeader className="text-center pb-2">
-                            <CardTitle className="mb-7">Queen’s Court 👑 (Enterprise)</CardTitle>
-                            <span className="font-bold text-5xl">
-                                {formatPrice(isYearly ? yearlyPrices.QueenCourt : monthlyPrices.QueenCourt)}
-                            </span>
-                        </CardHeader>
-                        <CardDescription className="text-center  w-11/12 mx-auto">
-                            Advanced features for scaling your business
-                        </CardDescription>
-                        <CardContent>
-                            <ul className="mt-7 space-y-2.5 text-sm">
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">Unlimited organizations</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">Unlimited members per org</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">Unlimited roles per org</span>
-                                </li>
-                                <li className="flex space-x-2">
-                                    <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
-                                    <span className="text-muted-foreground">24/7 Premium Support</span>
-                                </li>
-                            </ul>
-                        </CardContent>
-                        <CardFooter>
-                            <Button className="w-full" variant={"outline"}>
-                                Subscribe
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                    {/* End Card */}
+                    {plans.map((plan) => (
+                        <Card key={plan.id} className={plan.isPopular ? "border-primary" : ""}>
+                            <CardHeader className="text-center pb-2">
+                                {plan.isPopular && (
+                                    <Badge className="uppercase w-max self-center mb-3">Most popular</Badge>
+                                )}
+                                <CardTitle className={plan.isPopular ? "!mb-7" : "mb-7"}>{plan.title}</CardTitle>
+                                <span className="flex items-end gap-2 justify-center">
+                                    <span className="font-bold text-5xl">{getPrice(plan).price === 0 ? "Free" : `₹ ${getPrice(plan).price}`}</span>
+                                </span>
+                            </CardHeader>
+                            <CardDescription className="text-center w-11/12 mx-auto line-clamp-2">
+                                {plan.description}
+                            </CardDescription>
+                            <CardContent>
+                                <ul className="mt-7 space-y-2.5 text-sm">
+                                    {plan.features.map((feature, index) => (
+                                        <li key={index} className="flex space-x-2 line-clamp-1">
+                                            <CheckIcon className="flex-shrink-0 mt-0.5 h-4 w-4" />
+                                            <span className="text-muted-foreground line-clamp-1">{feature}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CardContent>
+                            <CardFooter>
+                                <Button
+                                    className="w-full"
+                                    variant={plan.isPopular ? "default" : "outline"}
+                                >
+                                    {plan.priceId === "" ? "Get Started" : "Subscribe"}
+                                </Button>
+                                <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+                                    <DialogContent className="sm:max-w-[425px]">
+                                        <DialogHeader>
+                                            <DialogTitle>Information !</DialogTitle>
+                                            <DialogDescription>
+                                                It seems like you are not logged in. Please sign in to purchase a plan.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="flex justify-end space-x-4 pt-4">
+                                            <Button variant="default" onClick={() => push("/login")}>
+                                                Sign in
+                                            </Button>
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+                            </CardFooter>
+                        </Card>
+                    ))}
                 </div>
                 {/* End Grid */}
                 <div className="mt-20">
@@ -304,37 +343,53 @@ export default function PricingSection() {
                                             <TableCell>{feature.name}</TableCell>
                                             <TableCell>
                                                 <div className="mx-auto w-min">
-                                                    {feature.Pollinator ? (
-                                                        <CheckIcon className="h-5 w-5" />
+                                                    {typeof feature.Pollinator === 'boolean' ? (
+                                                        feature.Pollinator ? (
+                                                            <CheckIcon className="h-5 w-5" />
+                                                        ) : (
+                                                            <MinusIcon className="h-5 w-5" />
+                                                        )
                                                     ) : (
-                                                        <MinusIcon className="h-5 w-5" />
+                                                        <span className="text-muted-foreground text-center">{feature.Pollinator}</span>
                                                     )}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className="mx-auto w-min">
-                                                    {feature.HoneyMaker ? (
-                                                        <CheckIcon className="h-5 w-5" />
+                                                    {typeof feature.HoneyMaker === 'boolean' ? (
+                                                        feature.HoneyMaker ? (
+                                                            <CheckIcon className="h-5 w-5" />
+                                                        ) : (
+                                                            <MinusIcon className="h-5 w-5" />
+                                                        )
                                                     ) : (
-                                                        <MinusIcon className="h-5 w-5" />
+                                                        <span className="text-muted-foreground text-center">{feature.HoneyMaker}</span>
                                                     )}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className="mx-auto w-min">
-                                                    {feature.HiveBuilder ? (
-                                                        <CheckIcon className="h-5 w-5" />
+                                                    {typeof feature.HiveBuilder === 'boolean' ? (
+                                                        feature.HiveBuilder ? (
+                                                            <CheckIcon className="h-5 w-5" />
+                                                        ) : (
+                                                            <MinusIcon className="h-5 w-5" />
+                                                        )
                                                     ) : (
-                                                        <MinusIcon className="h-5 w-5" />
+                                                        <span className="text-muted-foreground text-center">{feature.HiveBuilder}</span>
                                                     )}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className="mx-auto w-min">
-                                                    {feature.QueenCourt ? (
-                                                        <CheckIcon className="h-5 w-5" />
+                                                    {typeof feature.QueenCourt === 'boolean' ? (
+                                                        feature.QueenCourt ? (
+                                                            <CheckIcon className="h-5 w-5" />
+                                                        ) : (
+                                                            <MinusIcon className="h-5 w-5" />
+                                                        )
                                                     ) : (
-                                                        <MinusIcon className="h-5 w-5" />
+                                                        <span className="text-muted-foreground text-center">{feature.QueenCourt}</span>
                                                     )}
                                                 </div>
                                             </TableCell>
@@ -347,7 +402,7 @@ export default function PricingSection() {
 
                     {/* Mobile view */}
                     <div className="space-y-24 lg:hidden">
-                        {["Free", "Startup", "Team", "Enterprise"].map((plan, index) => (
+                        {["Pollinator", "HoneyMaker", "HiveBuilder", "QueenCourt"].map((plan, index) => (
                             <section key={plan}>
                                 <div className="mb-4">
                                     <h4 className="text-xl font-medium">{plan}</h4>
@@ -363,10 +418,14 @@ export default function PricingSection() {
                                                     <TableRow key={`mobile-${featureType.type}-${feature.name}`} className="text-muted-foreground">
                                                         <TableCell className="w-11/12">{feature.name}</TableCell>
                                                         <TableCell className="text-right">
-                                                            {feature[plan as keyof typeof feature] ? (
-                                                                <CheckIcon className="h-5 w-5" />
+                                                            {typeof feature[plan as keyof typeof feature] === 'boolean' ? (
+                                                                feature[plan as keyof typeof feature] ? (
+                                                                    <CheckIcon className="h-5 w-5" />
+                                                                ) : (
+                                                                    <MinusIcon className="h-5 w-5" />
+                                                                )
                                                             ) : (
-                                                                <MinusIcon className="h-5 w-5" />
+                                                                <span className="text-muted-foreground text-center">{feature[plan as keyof typeof feature]}</span>
                                                             )}
                                                         </TableCell>
                                                     </TableRow>
