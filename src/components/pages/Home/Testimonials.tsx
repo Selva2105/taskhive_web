@@ -26,7 +26,7 @@ const Testimonials = () => {
                     }
                 ].map((testimonial, index) => (
                     <div key={index} className="bg-white p-6 rounded-lg shadow-md">
-                        <p className="text-gray-600 mb-4">"{testimonial.quote}"</p>
+                        <p className="text-gray-600 mb-4">&ldquo;{testimonial.quote}&rdquo;</p>
                         <div className="flex items-center">
                             <img src={testimonial.image} alt={testimonial.author} width={64} height={64} className="rounded-full mr-4 w-16 h-16 object-cover" />
                             <div>
